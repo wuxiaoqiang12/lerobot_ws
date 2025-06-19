@@ -1,0 +1,28 @@
+# connect moveit with ros2_contol
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+# define the controller used in ros2_control 
+moveit_simple_controller_manager:
+  controller_names:
+    - arm_controller
+    - gripper_controller
+
+  arm_controller:
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+
+
+  gripper_controller:
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - "6"
+  
