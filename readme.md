@@ -39,6 +39,7 @@ Clone this repository and install dependencies using [rosdep](https://docs.ros.o
 
 **Video:**  
 <!-- Add your video link here -->
+https://github.com/user-attachments/assets/98f0a867-46c5-4661-8308-5de9e60a960b
 
 ---
 
@@ -52,6 +53,10 @@ Clone this repository and install dependencies using [rosdep](https://docs.ros.o
 
 **Video:**  
 <!-- Add your video link here -->
+
+
+https://github.com/user-attachments/assets/7d82b15c-8276-43b1-9b73-00b3567a5cf7
+
 
 ---
 
@@ -67,8 +72,16 @@ Clone this repository and install dependencies using [rosdep](https://docs.ros.o
 **Settings:**
 - select "ompl" planning library for "arm" and "gripper" groups 
 
-**Video:**  
+**Video: Arm**  
 <!-- Add your video link here -->
+
+
+https://github.com/user-attachments/assets/f95e9fd7-272a-46a1-8b34-0cb6c3f36da8
+
+**Video: Gripper**  
+<!-- Add your video link here -->
+
+https://github.com/user-attachments/assets/5511c329-faad-4020-9527-4034f54a027a
 
 ---
 
