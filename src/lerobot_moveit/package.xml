@@ -3,9 +3,11 @@
 <package format="3">
   <name>lerobot_moveit</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="pavankv92@gmail.com">pavankv</maintainer>
-  <license>TODO: License declaration</license>
+  <description> ROS 2 package providing MoveIt 2 configuration, launch files, and integration for
+    the LeRobot SO101 robotic arm, enabling motion planning and manipulation in simulation or with
+    real hardware. </description>
+  <maintainer email="roboguru.92@gmail.com">pavankv</maintainer>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

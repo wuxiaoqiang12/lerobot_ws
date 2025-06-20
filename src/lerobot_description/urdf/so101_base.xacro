@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 
+<!--
+  This file is based on the SO-ARM100 model from:
+  https://github.com/TheRobotStudio/SO-ARM100
+  and has been modified accordingly.
+-->
+
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 	<!-- Links -->
