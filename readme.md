@@ -16,7 +16,7 @@ LeRobot SO-ARM101 integrated into ROS 2 Jazzy.
 Clone this repository and install dependencies using [rosdep](https://docs.ros.org/en/ros2_packages/rosdep.html):
 
 
-### Clone the repository (replace with your repo URL if needed)
+### Clone the repository
 `git clone https://github.com/yourusername/lerobot_ws.git`
 
 `cd lerobot_ws`
