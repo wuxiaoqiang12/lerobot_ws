@@ -1,6 +1,6 @@
-# ROS 2 Package for LeRobot SO101
+# ROS 2 Package for LeRobot SO-ARM101
 
-LeRobot SO101 integrated into ROS 2 Jazzy.
+LeRobot SO-ARM101 integrated into ROS 2 Jazzy.
 
 ## Features
 
@@ -87,7 +87,7 @@ https://github.com/user-attachments/assets/5511c329-faad-4020-9527-4034f54a027a
 
 ## License
 
-This project is based on [RobotStudio SO-ARM100](https://github.com/TheRobotStudio/SO-ARM100licensed) and adheres to their license.
+This project is based on [RobotStudio SO-ARM100](https://github.com/TheRobotStudio/SO-ARM100) and adheres to their license.
 
 
 
