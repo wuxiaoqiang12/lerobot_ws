@@ -17,7 +17,7 @@ Clone this repository and install dependencies using [rosdep](https://docs.ros.o
 
 
 ### Clone the repository
-`git clone https://github.com/yourusername/lerobot_ws.git`
+`git clone https://github.com/Pavankv92/lerobot_ws.git`
 
 `cd lerobot_ws`
 
