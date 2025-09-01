@@ -1,0 +1,32 @@
+# so101_servo/config/so101_servo_config.yaml
+
+
+# General Servo parameters:
+use_gazebo: true
+command_in_type: "unitless"
+# 笛卡尔空间控制的速度和缩放比例
+scale:
+  linear: 1.0  # 摇杆推到底时，末端最大线速度 (m/s)
+  rotational: 1.0 # 摇杆推到底时，末端最大角速度 (rad/s)
+  joint: 1.0 # 关节空间控制时的最大关节速度 (rad/s)
+
+# 这些是必须修改的关键参数
+move_group_name: "arm"                               # 必须与您 SRDF 文件中的 planning group 名字一致
+planning_frame: "base"                             # 您机械臂的基座标系 (base frame)
+ee_frame_name: "gripper"
+robot_link_command_frame: "base"
+command_out_topic: "/arm_controller/joint_trajectory" # 这是关键！这个 topic 必须是 ros2_control 控制器（arm_controller）接收指令的 topic
+is_primary_planning_scene_monitor: false
+
+  # Cartesian Servo parameters:
+cartesian_command_in_topic: "/servo_node/delta_twist_cmds"
+# 这些参数可以先使用默认值，后续进行微调
+command_out_type: "trajectory_msgs/JointTrajectory"
+publish_period: 0.02  # 50 Hz, 伺服指令发布频率
+# 碰撞检测和奇异点处理 (非常重要)
+check_collisions: true
+collision_check_rate: 10.0 # Hz
+
+lower_singularity_threshold: 250.0
+hard_stop_singularity_threshold: 500.0
+joint_limit_margin: 0.01
