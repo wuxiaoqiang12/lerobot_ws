@@ -1,9 +1,9 @@
 controller_manager:
   ros__parameters:
-    update_rate: 10 # Hz
+    update_rate: 100 # Hz
 
     arm_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
+      type: position_controllers/JointGroupPositionController
 
     # gripper_controller:
     #   type: forward_command_controller/ForwardCommandController
@@ -29,7 +29,7 @@ arm_controller:
     state_interfaces:
       - position
 
-    open_loop_control: false
+    # open_loop_control: false
     allow_integration_in_goal_trajectories: true
     allow_nonzero_velocity_at_trajectory_end: true
 

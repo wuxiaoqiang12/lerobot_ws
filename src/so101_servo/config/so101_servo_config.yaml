@@ -15,13 +15,20 @@ move_group_name: "arm"                               # 必须与您 SRDF 文件�
 planning_frame: "base"                             # 您机械臂的基座标系 (base frame)
 ee_frame_name: "gripper"
 robot_link_command_frame: "base"
-command_out_topic: "/arm_controller/joint_trajectory" # 这是关键！这个 topic 必须是 ros2_control 控制器（arm_controller）接收指令的 topic
+# command_out_topic: "/arm_controller/joint_trajectory" # 这是关键！这个 topic 必须是 ros2_control 控制器（arm_controller）接收指令的 topic
 is_primary_planning_scene_monitor: false
 
   # Cartesian Servo parameters:
 cartesian_command_in_topic: "/servo_node/delta_twist_cmds"
-# 这些参数可以先使用默认值，后续进行微调
-command_out_type: "trajectory_msgs/JointTrajectory"
+status_topic: "/servo_node/status"
+# Set the command output type to std_msgs/Float64MultiArray for position control
+command_out_type: "std_msgs/Float64MultiArray"
+# The topic that the JointGroupPositionController listens on
+command_out_topic: "/arm_controller/commands"
+# What to publish? Can be joint_pos, joint_vel, or twist
+# We set it to joint_pos, although command_out_type is the determining factor here.
+publish_joint_positions: true
+publish_joint_velocities: false
 publish_period: 0.02  # 50 Hz, 伺服指令发布频率
 # 碰撞检测和奇异点处理 (非常重要)
 check_collisions: true

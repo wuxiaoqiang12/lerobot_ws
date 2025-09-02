@@ -14,8 +14,8 @@ class JoyToServo(Node):
         self.servo = MoveIt2Servo(
             self,
             frame_id="world",
-            linear_speed=10.0,
-            angular_speed=10.0,
+            linear_speed=1.0,
+            angular_speed=1.0,
             enable_at_init=False,  # Start disabled
         )
         self.get_logger().info("MoveIt2Servo Initialized. Press 'A' to enable, 'B' to disable.")
