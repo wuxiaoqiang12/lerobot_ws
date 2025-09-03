@@ -12,9 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        # 包含 launch 文件
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
-        # 包含 config 文件
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
     ],
     install_requires=['setuptools'],
@@ -26,7 +24,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            # 这一行现在可以正确地找到您的脚本了
             'joy_to_servo_node = so101_servo.joy_to_servo:main',
         ],
     },

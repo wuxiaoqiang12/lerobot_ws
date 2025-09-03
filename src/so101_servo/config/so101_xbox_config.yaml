@@ -1,21 +1,22 @@
-# so101_servo/config/so101_xbox_config.yaml
-
-joy_to_servo:
+joy_to_servo_node:
   ros__parameters:
-    # 笛卡尔空间控制映射
-    forward_command: "axes.1"      # 左摇杆上下 (前进/后退)
-    backward_command: "axes.1"     # (反向)
-    left_command: "axes.0"         # 左摇杆左右 (左/右)
-    right_command: "axes.0"        # (反向)
-    up_command: "axes.4"           # 右摇杆上下 (上/下)
-    down_command: "axes.4"         # (反向)
-    yaw_command: "axes.3"          # 右摇杆左右 (偏航)
-    roll_command: "axes.7"         # 十字键左右 (翻滚)
-    pitch_command: "axes.6"        # 十字键上下 (俯仰)
+    # Button mapping
+    buttons:
+      enable: 0
+      disable: 1
+      joint_mode: 4
 
-    # 关节空间控制映射 (按住 LB 键激活)
-    joint_jog_command_axes: "axes.0; axes.1; axes.3; axes.4; axes.6; axes.7"
-    
-    # 切换按钮
-    joint_servo_command_trigger: "buttons.4"  # LB 键: 按住切换到关节控制模式
-    cartesian_servo_command_trigger: "buttons.5" # RB 键: 按住切换到笛卡尔控制模式
+    # Cartesian space control
+    cartesian:
+      linear:
+        x: 1
+        y: 0
+        z: 4
+      angular:
+        z: 3
+
+    # Joint space control
+    joint:
+      axes_map: [0, 1, 3, 4, 6]
+      # Ensure these joint names match your controller configuration
+      joint_names: ["1", "2", "3", "4", "5"]

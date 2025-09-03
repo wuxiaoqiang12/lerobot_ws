@@ -4,35 +4,26 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from moveit_configs_utils import MoveItConfigsBuilder
-
-def load_yaml(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
-    try:
-        with open(absolute_file_path, "r") as file:
-            return yaml.safe_load(file)
-    except EnvironmentError:
-        return None
+from launch.substitutions import PathJoinSubstitution
+from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
-    # 1. 加载 MoveIt 配置
+    # 1. Load MoveIt config
     moveit_config = (
         MoveItConfigsBuilder("so101", package_name="lerobot_moveit")
         .to_moveit_configs()
     )
 
-    # 2. 加载我们修改后的 Servo YAML 文件
-    servo_yaml = load_yaml("so101_servo", "config/so101_servo_config.yaml")
-    # 将加载的参数封装在 'moveit_servo' 命名空间下
+    # 2. Load Servo YAML file
+    servo_yaml = yaml.safe_load(open(os.path.join(get_package_share_directory('so101_servo'), 'config', 'so101_servo_config.yaml')))
     servo_params = {"moveit_servo": servo_yaml}
 
-    # 3. 启动 MoveIt Servo 核心节点
-    # 这是最关键的修正：我们传递的是 Python 字典，而不是文件路径
+    # 3. Start the core MoveIt Servo node
     servo_node = Node(
         package="moveit_servo",
         executable="servo_node_main",
         parameters=[
-            servo_params,  # <-- 传递字典
+            servo_params,
             moveit_config.robot_description,
             moveit_config.robot_description_semantic,
             moveit_config.robot_description_kinematics,
@@ -41,19 +32,21 @@ def generate_launch_description():
         output="screen",
     )
 
-    # 4. 启动 joy 节点
+    # 4. Get the absolute path to the joystick config file
+    joy_config_path = PathJoinSubstitution(
+        [FindPackageShare("so101_servo"), "config", "so101_xbox_config.yaml"]
+    )
+
+    # 5. Start the joy node
     joy_node = Node(package="joy", executable="joy_node", name="joy_node", parameters=[{'use_sim_time': True}],)
     
-    # 5. 启动我们的 Python 脚本 (这个不需要改动)
+    # 6. Start the Python script
     joy_to_servo_node = Node(
         package="so101_servo",
         executable="joy_to_servo_node",
         name="joy_to_servo_node",
         parameters=[{'use_sim_time': True}],
-        # 这是修正的关键部分
-        remappings=[
-            ("delta_twist_cmds", "/servo_node/delta_twist_cmds")
-        ]
+        remappings=[("delta_twist_cmds", "/servo_node/delta_twist_cmds")]
     )
 
     return LaunchDescription([
