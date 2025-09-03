@@ -91,13 +91,18 @@ https://github.com/user-attachments/assets/5511c329-faad-4020-9527-4034f54a027a
 
 **Summary:** Gazebo, ROS 2 Control, MoveIt 2 Servo and Joystick: Control the arm using a joystick.
 
-**Commands:**
+**Commands:**  
 `ros2 launch lerobot_description so101_gazebo.launch.py`  
 `ros2 launch lerobot_controller so101_controller.launch.py`  
-`ros2 launch lerobot_moveit so101_moveit.launch.py`
+`ros2 launch lerobot_moveit so101_moveit.launch.py`  
 `ros2 launch so101_servo so101_servo.launch.py`
 
-**Video:** ---
+**Video: Arm and Gripper**
+<!-- Add your video link here -->
+
+https://github.com/user-attachments/assets/06f409ad-f9df-44cf-b71d-e9cbb7d56fbc
+
+---
 
 ## License
 
