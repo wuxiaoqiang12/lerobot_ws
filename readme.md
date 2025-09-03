@@ -1,14 +1,16 @@
 # ROS 2 Package for LeRobot SO-ARM101
 
-LeRobot SO-ARM101 integrated into ROS 2 Jazzy.
+LeRobot SO-ARM101 integrated into ROS 2.
 
 ## Features
 
 - ✅ ROS 2 Jazzy compatibility
+- ✅ ROS 2 Humble compatibility
 - ✅ Rviz visualization
 - ✅ Gazebo Harmonic simulation
 - ✅ ROS 2 Control integration
 - ✅ MoveIt 2 motion planning
+- ✅ Joystick control with MoveIt2 Servo
 - 📝 **TODO:** ROS 2 control interface for the real HW
 ---
 ## Installation
@@ -34,10 +36,10 @@ Clone this repository and install dependencies using [rosdep](https://docs.ros.o
 
 **Summary:** Visualising LeRobot SO101 in Rviz
 
-**Command:**  
+**Command:**
 `ros2 launch lerobot_description so101_display.launch.py`
 
-**Video:**  
+**Video:**
 <!-- Add your video link here -->
 https://github.com/user-attachments/assets/98f0a867-46c5-4661-8308-5de9e60a960b
 
@@ -85,13 +87,18 @@ https://github.com/user-attachments/assets/5511c329-faad-4020-9527-4034f54a027a
 
 ---
 
+## Gazebo, ROS 2 Control, MoveIt2 Servo and Joystick control
+
+**Summary:** Gazebo, ROS 2 Control, MoveIt 2 Servo and Joystick: Control the arm using a joystick.
+
+**Commands:**
+`ros2 launch lerobot_description so101_gazebo.launch.py`  
+`ros2 launch lerobot_controller so101_controller.launch.py`  
+`ros2 launch lerobot_moveit so101_moveit.launch.py`
+`ros2 launch so101_servo so101_servo.launch.py`
+
+**Video:** ---
+
 ## License
 
 This project is based on [RobotStudio SO-ARM100](https://github.com/TheRobotStudio/SO-ARM100) and adheres to their license.
-
-
-
-
-
-
-
