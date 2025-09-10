@@ -1,13 +1,21 @@
 import os
 import yaml
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from moveit_configs_utils import MoveItConfigsBuilder
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
+    use_sim_arg = DeclareLaunchArgument(
+        'use_sim',
+        default_value='false',
+        description='Use simulation (Gazebo) or real hardware')
+
+    use_sim_time = LaunchConfiguration('use_sim')
+
     # 1. Load MoveIt config
     moveit_config = (
         MoveItConfigsBuilder("so101", package_name="lerobot_moveit")
@@ -27,7 +35,7 @@ def generate_launch_description():
             moveit_config.robot_description,
             moveit_config.robot_description_semantic,
             moveit_config.robot_description_kinematics,
-            {'use_sim_time': True},
+            {'use_sim_time': use_sim_time},
         ],
         output="screen",
     )
@@ -38,18 +46,24 @@ def generate_launch_description():
     )
 
     # 5. Start the joy node
-    joy_node = Node(package="joy", executable="joy_node", name="joy_node", parameters=[{'use_sim_time': True}],)
+    joy_node = Node(
+        package="joy", 
+        executable="joy_node", 
+        name="joy_node", 
+        parameters=[{'use_sim_time': use_sim_time}],
+    )
     
     # 6. Start the Python script
     joy_to_servo_node = Node(
         package="so101_servo",
         executable="joy_to_servo_node",
         name="joy_to_servo_node",
-        parameters=[{'use_sim_time': True}],
+        parameters=[{'use_sim_time': use_sim_time}],
         remappings=[("delta_twist_cmds", "/servo_node/delta_twist_cmds")]
     )
 
     return LaunchDescription([
+        use_sim_arg,
         servo_node,
         joy_node,
         joy_to_servo_node,
