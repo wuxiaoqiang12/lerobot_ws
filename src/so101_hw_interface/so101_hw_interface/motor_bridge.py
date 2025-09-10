@@ -52,16 +52,23 @@ from so101_hw_interface.motors import Motor, MotorNormMode
 PORT_DEFAULT = "/dev/ttyACM0"
 
 JOINTS = {
-    "shoulder_pan": {"id": 1, "model": "sts3215"},
-    "shoulder_lift": {"id": 2, "model": "sts3215"},
-    "elbow_flex": {"id": 3, "model": "sts3215"},
-    "wrist_flex": {"id": 4, "model": "sts3215"},
-    "wrist_roll": {"id": 5, "model": "sts3215"},
-    "gripper": {"id": 6, "model": "sts3215"},
+    "1": {"id": 1, "model": "sts3215"},
+    "2": {"id": 2, "model": "sts3215"},
+    "3": {"id": 3, "model": "sts3215"},
+    "4": {"id": 4, "model": "sts3215"},
+    "5": {"id": 5, "model": "sts3215"},
+    "6": {"id": 6, "model": "sts3215"},
 }
 
-# Default calibration file distributed with the package (can be overridden by
-# the ROS parameter "calib_file").
+INITIAL_RAW_POSITIONS = {
+     "1": 2146,
+     "2": 851,
+     "3": 2974,
+     "4": 2619,
+     "5": 1919,
+     "6": 2042,
+}
+
 CALIB_FILE = (
     pathlib.Path(get_package_share_directory("so101_hw_interface"))
     / "config/so101_calibration.yaml"
@@ -104,30 +111,28 @@ class MotorBridge(Node):
             10,
         )
 
-        # Command cache (rad)
-        self.current_commands: dict[str, float] = {name: 0.0 for name in JOINTS}
-
-        # Feetech STS3215 resolution: 4096 steps per 2π rad
-        self._steps_per_rad = 4096.0 / (2 * math.pi)
-
-        # Load calibration (if file exists) else fall back to first-read capture
-        calib_path = pathlib.Path(self.get_parameter("calib_file").get_parameter_value().string_value).expanduser()
+        # State variables
+        self.current_commands: dict[str, float] = {}
         self._home_offsets: dict[str, int] | None = None
         self._limits: dict[str, tuple[int, int]] | None = None
+        self._initial_move_done = False
+        self._is_read_turn = True # Flag to alternate between read and write
+
+        self._steps_per_rad = 4096.0 / (2 * math.pi)
+
+        # Load calibration
+        calib_path = pathlib.Path(self.get_parameter("calib_file").get_parameter_value().string_value).expanduser()
         if calib_path.is_file():
             with open(calib_path, "r", encoding="utf-8") as fp:
                 calib = yaml.safe_load(fp)
-            self._home_offsets = {j: calib[j]["homing_offset"] for j in JOINTS if j in calib}
             self._limits = {j: (calib[j]["range_min"], calib[j]["range_max"]) for j in JOINTS if j in calib}
-            self.get_logger().info(f"Loaded calibration from {calib_path}")
+            self.get_logger().info(f"Loaded joint limits from {calib_path}")
         else:
-            self.get_logger().warn(f"Calibration file {calib_path} not found – will capture offsets on first read.")
+            self.get_logger().warn(f"Calibration file {calib_path} not found.")
 
         # Timer for periodic read/write (50 Hz)
         self.timer = self.create_timer(0.02, self._timer_cb)
-
-        # Flag to ensure we only command the initial middle position once
-        self._initial_move_done = False
+        self.get_logger().info("Motor bridge node started with alternating read/write timer.")
 
     # ---------------------------------------------------------------------
     # Callbacks
@@ -135,71 +140,75 @@ class MotorBridge(Node):
     def _command_cb(self, msg: JointState):
         """Store desired joint positions from topic (rad)."""
         for name, pos in zip(msg.name, msg.position):
-            if name in self.current_commands:
+            if name in JOINTS:
                 self.current_commands[name] = pos
 
     def _timer_cb(self):
-        # --- Read present positions
+        # On each timer tick, we either do a read or a write, but never both.
+        if self._is_read_turn:
+            self._do_read()
+        else:
+            self._do_write()
+
+        # Flip the flag for the next turn
+        self._is_read_turn = not self._is_read_turn
+
+    def _do_read(self):
         try:
             raw_positions = self.bus.sync_read("Present_Position", normalize=False)
-
-            # Establish home offsets once (first successful read)
-            if self._home_offsets is None:
-                self._home_offsets = raw_positions
-                self.get_logger().info("Captured home offsets: %s" % self._home_offsets)
-
-            # convert to radians relative to home
-            positions = {
-                n: (raw - self._home_offsets.get(n, 0)) * (2 * math.pi) / 4096.0 if self._home_offsets else 0.0
-                for n, raw in raw_positions.items()
-            }
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             self.get_logger().warn(f"sync_read failed: {exc}")
             return
 
-        # Publish joint states
+        if self._home_offsets is None:
+            self._home_offsets = raw_positions
+            self.get_logger().info(f"Captured home offsets on first read: {self._home_offsets}")
+            # Initialize current_commands to the starting pose in radians
+            self.current_commands = {
+                n: (raw - self._home_offsets.get(n, 0)) * (2 * math.pi) / 4096.0
+                for n, raw in raw_positions.items()
+            }
+
+        # Publish current joint states
         js = JointState()
         js.header.stamp = self.get_clock().now().to_msg()
         js.name = list(JOINTS.keys())
-        js.position = [positions[n] for n in js.name]
-        js.velocity = []
-        js.effort = []
+        js.position = [
+            (raw - self._home_offsets.get(n, 0)) * (2 * math.pi) / 4096.0
+            for n, raw in raw_positions.items()
+        ]
         self.joint_states_pub.publish(js)
 
-        # -----------------------------------------------------------------
-        # After the first successful read AND once we have both limits and
-        # home offsets, send a single command to drive each joint to the
-        # middle of its calibrated range. This provides a well-defined pose
-        # on startup without relying on external controllers.
-        # -----------------------------------------------------------------
-        if (
-            not self._initial_move_done
-            and self._home_offsets is not None
-            and self._limits is not None
-        ):
-            for name in JOINTS:
-                if name in self._limits and name in self._home_offsets:
-                    low, high = self._limits[name]
-                    mid_raw = int((low + high) / 2)
-                    # Convert to radians relative to home
-                    self.current_commands[name] = (mid_raw - self._home_offsets[name]) * (2 * math.pi) / 4096.0
-            self._initial_move_done = True
-            self.get_logger().info("Issued initial command to move joints to mid-range position.")
+    def _do_write(self):
+        if self._home_offsets is None:
+            self.get_logger().warn("Skipping write: home offsets not yet captured.")
+            return
 
-        # --- Write goal positions
+        # On the first write cycle, command the motors to their predefined initial pose.
+        if not self._initial_move_done:
+            self.get_logger().info(f"Commanding initial pose: {INITIAL_RAW_POSITIONS}")
+            try:
+                self.bus.sync_write("Goal_Position", INITIAL_RAW_POSITIONS, normalize=False)
+                self._initial_move_done = True
+            except Exception as exc:
+                self.get_logger().error(f"Failed to write initial pose: {exc}")
+            return # Skip regular command on this turn
+
+        # On subsequent write cycles, send the latest commands from the topic.
+        if not self.current_commands:
+            return # Nothing to write
+
         try:
-            # convert desired rad to raw steps relative to home
             raw_goals = {}
             for n, rad in self.current_commands.items():
-                home = self._home_offsets.get(n, 0) if self._home_offsets else 0
+                home = self._home_offsets.get(n, 0)
                 raw = int(home + rad * self._steps_per_rad)
-                # clamp to limits if available
                 if self._limits and n in self._limits:
                     low, high = self._limits[n]
                     raw = max(low, min(high, raw))
                 raw_goals[n] = raw
             self.bus.sync_write("Goal_Position", raw_goals, normalize=False)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             self.get_logger().warn(f"sync_write failed: {exc}")
 
 
@@ -216,10 +225,11 @@ def main():  # noqa: D401
     except KeyboardInterrupt:
         pass
     finally:
+        node.get_logger().info("Disconnecting from motor bus...")
         node.bus.disconnect()
         node.destroy_node()
         rclpy.shutdown()
 
 
 if __name__ == "__main__":
-    main() 
+    main()

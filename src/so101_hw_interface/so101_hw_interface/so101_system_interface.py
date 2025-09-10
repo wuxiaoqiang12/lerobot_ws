@@ -8,7 +8,7 @@ from so101_hw_interface.motors.feetech import FeetechMotorsBus
 from so101_hw_interface.motors import Motor, MotorNormMode
 
 
-class SO101SystemInterface(SystemInterface):
+class So101SystemInterface(SystemInterface):
 
     def on_init(self, info):
         self.info_ = info

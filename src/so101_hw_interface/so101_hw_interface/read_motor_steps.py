@@ -22,12 +22,12 @@ from so101_hw_interface.motors import Motor, MotorNormMode
 # Joint → (ID, model) map – keep in sync with the rest of the package
 # -----------------------------------------------------------------------------
 JOINTS: dict[str, dict[str, int | str]] = {
-    "shoulder_pan": {"id": 1, "model": "sts3215"},
-    "shoulder_lift": {"id": 2, "model": "sts3215"},
-    "elbow_flex": {"id": 3, "model": "sts3215"},
-    "wrist_flex": {"id": 4, "model": "sts3215"},
-    "wrist_roll": {"id": 5, "model": "sts3215"},
-    "gripper": {"id": 6, "model": "sts3215"},
+    "1": {"id": 1, "model": "sts3215"},
+    "2": {"id": 2, "model": "sts3215"},
+    "3": {"id": 3, "model": "sts3215"},
+    "4": {"id": 4, "model": "sts3215"},
+    "5": {"id": 5, "model": "sts3215"},
+    "6": {"id": 6, "model": "sts3215"},
 }
 
 
