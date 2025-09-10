@@ -357,7 +357,8 @@
 		<parent link="gripper" />
 		<child link="jaw" />
 		<axis xyz="0 0 1" />
-		<limit effort="10" velocity="10" lower="-0.174533" upper="1.74533" />
+		<!-- calibrated limits: raw(2041,3457) home(2749) = (-1.0858,+1.0858) rad -->
+		<limit effort="10" velocity="10" lower="-1.0858" upper="1.0858"/>
 	</joint>
 
 	<transmission name="6_trans">
@@ -377,7 +378,8 @@
 		<parent link="wrist" />
 		<child link="gripper" />
 		<axis xyz="0 0 1" />
-		<limit effort="10" velocity="10" lower="-2.79253" upper="2.79253" />
+		<!-- calibrated limits: raw(64,3860) home(1962) = (-2.9115,+2.9115) rad -->
+		<limit effort="10" velocity="10" lower="-2.9115" upper="2.9115" />
 	</joint>
 
 	<transmission name="5_trans">
@@ -417,7 +419,8 @@
 		<parent link="upper_arm" />
 		<child link="lower_arm" />
 		<axis xyz="0 0 1" />
-		<limit effort="10" velocity="10" lower="-1.74533" upper="1.5708" />
+		<!-- calibrated limits: raw(755,2948) home(1851) = (-1.6813,+1.6828) rad -->
+		<limit effort="10" velocity="10" lower="-1.6813" upper="1.6828" />
 	</joint>
 
 	<transmission name="3_trans">
@@ -457,7 +460,8 @@
 		<parent link="base" />
 		<child link="shoulder" />
 		<axis xyz="0 0 1" />
-		<limit effort="10" velocity="10" lower="-1.91986" upper="1.91986" />
+		<!-- calibrated limits: raw(817,3516) home(2166) = (-2.0693,+2.0709) rad -->
+		<limit effort="10" velocity="10" lower="-2.0693" upper="2.0709" />
 	</joint>
 
 	<transmission name="1_trans">

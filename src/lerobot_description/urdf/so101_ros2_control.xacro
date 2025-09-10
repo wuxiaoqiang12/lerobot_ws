@@ -1,16 +1,27 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+    <xacro:arg name="use_sim" default="true"/>
+
     <ros2_control name="RobotSystem" type="system">
-        <!-- ros2_control Gazebo -->
-        <hardware>
-            <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-        </hardware>
+        <xacro:if value="$(arg use_sim)">
+            <hardware>
+                <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+            </hardware>
+        </xacro:if>
+
+        <xacro:unless value="$(arg use_sim)">
+            <hardware>
+                <plugin>topic_based_ros2_control/TopicBasedSystem</plugin>
+                <param name="joint_commands_topic">/so101_follower/joint_commands</param>
+                <param name="joint_states_topic">/so101_follower/joint_states</param>
+            </hardware>
+        </xacro:unless>
 
         <joint name="1">
             <command_interface name="position">
-                <param name="min">-1.91986</param>
-                <param name="max">1.91986</param>
+                <param name="min">-2.0693</param>
+                <param name="max">2.0709</param>
             </command_interface>
             <state_interface name="position" />
         </joint>
@@ -25,8 +36,8 @@
 
         <joint name="3">
             <command_interface name="position">
-                <param name="min">-1.74533</param>
-                <param name="max">1.5708</param>
+                <param name="min">-1.6813</param>
+                <param name="max">1.6828</param>
             </command_interface>
             <state_interface name="position" />
         </joint>
@@ -40,16 +51,16 @@
         </joint>
         <joint name="5">
             <command_interface name="position">
-                <param name="min">-2.79253</param>
-                <param name="max">2.79253</param>
+                <param name="min">-2.9115</param>
+                <param name="max">2.9115</param>
             </command_interface>
             <state_interface name="position" />
         </joint>
 
         <joint name="6">
             <command_interface name="position">
-                <param name="min">-0.174533</param>
-                <param name="max">1.74533</param>
+                <param name="min">-1.0858</param>
+                <param name="max">1.0858</param>
             </command_interface>
             <state_interface name="position" />
         </joint>
