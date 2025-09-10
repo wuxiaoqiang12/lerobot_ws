@@ -15,7 +15,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
-        (os.path.join('share', package_name, 'urdf'), glob('urdf/*')),
+        # (os.path.join('share', package_name, 'urdf'), glob('urdf/*')),
         (os.path.join('share', package_name, 'resource'), glob('resource/*.xml')),
         # Install wrapper scripts into lib/<package_name> so ros2 run can locate them
         (os.path.join('lib', package_name), ['scripts/so101_motor_bridge', 'scripts/so101_calibrate', 'scripts/so101_read_steps']),
